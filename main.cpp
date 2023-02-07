@@ -11,10 +11,10 @@ void DrawFilledRect(int x, int y, int w, int h) {
     FillRect(screenDC, &rect, EnemyBrush);
 }
 
-void DrawBorderBox(int x, bool y, int w, int h, int thickness) {
+void DrawBorderBox(int x, int y, int w, int h, int thickness) {
     DrawFilledRect(x, y, w, thickness); // Top horiz line
     DrawFilledRect(x, y, thickness, h); // Left vertical line
-    DrawFilledRect(x + w - thickness, y, thickness, h); // Right vertical line
+    DrawFilledRect(x + w - thickness, y, thicknes, h); // Right vertical line
     DrawFilledRect(x, y + h - thickness, w, thicknes); // Bottom horiz line
 }
 
@@ -23,25 +23,28 @@ bool isPurple(byte red, byte green, byte blue) {
 }
 
 int main() {
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    int screenCenterX = GetSystemMetrics(SM_CXSCREEN) / 2;
+    int screenCenterY = GetSystemMetrics(SM_CYSCREEN) / 2;
 
-    int screenCenterX = screenWidth / 2;
-    int screenCenterY = screenHeight / 2;
+    int width = 5;
+    int height = 5;
+
+    int x = screenCenterX - width / 2;
+    int y = screenCenterY - height / 2;
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
 
     HDC memoryDC = CreateCompatibleDC(screenDC);
-    HBITMAP memoryBitmap = CreateCompatibleBitmap(screenDC, screenWidth, screenHeight);
+    HBITMAP memoryBitmap = CreateCompatibleBitmap(screenDC, width, height);
 
     while (true) {
         Sleep(6);
 
         if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
             HGDIOBJ oldBitmap = SelectObject(memoryDC, memoryBitmap);
-            BitBlt(memoryDC, 0, 0, screenWidth, screenHeight, screenDC, 0, 0, SRCCOPY);
+            BitBlt(memoryDC, 0, 0, width, height, screenDC, x, y, SRCCOPY);
             SelectObject(memoryDC, oldBitmap);
 
             Gdiplus::Bitmap bitmap(memoryBitmap, nullptr);
@@ -49,16 +52,16 @@ int main() {
 
             bool stop_loop = false;
 
-            for (int y = screenCenterY - 5; y < screenCenterY + 5 && !stop_loop; ++y) {
-                for (int x = screenCenterX - 5; x < screenCenterX + 5 && !stop_loop; ++x) {
-                    bitmap.GetPixel(x, y, &color);
+            for (int i = 0; i < height && !stop_loop; ++i) {
+                for (int j = 0; j < width && !stop_loop; ++j) {
+                    bitmap.GetPixel(i, j, &color);
 
                     if (isPurple(color.GetR(), color.GetG(), color.GetB())) {
                         stop_loop = true;
 
                         mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
-                        DrawBorderBox(x - 15, y - 10, 30, 30, 2);
+                        DrawBorderBox(screenCenterX + j - 15, screenCenterY + i - 10, 30, 30, 2);
                         Sleep(300);
                     }
                 }
