@@ -1,7 +1,8 @@
-#include <Windows.h>
+#include <windows.h>
 #include <gdiplus.h>
+#include <iostream>
 
-#pragma comment (lib, "Gdiplus.lib");
+#pragma comment(lib, "gdiplus.lib")
 
 HBRUSH EnemyBrush = CreateSolidBrush(0x000000FF);
 HDC screenDC = GetDC(HWND_DESKTOP);
@@ -23,6 +24,10 @@ bool isPurple(byte red, byte green, byte blue) {
 }
 
 int main() {
+    SetConsoleTitleA("sus");
+
+    printf("Starting sus...\n");
+
     int screenCenterX = GetSystemMetrics(SM_CXSCREEN) / 2;
     int screenCenterY = GetSystemMetrics(SM_CYSCREEN) / 2;
 
@@ -38,6 +43,8 @@ int main() {
 
     HDC memoryDC = CreateCompatibleDC(screenDC);
     HBITMAP memoryBitmap = CreateCompatibleBitmap(screenDC, width, height);
+
+    printf("sus started successfully!\n");
 
     while (true) {
         Sleep(6);
